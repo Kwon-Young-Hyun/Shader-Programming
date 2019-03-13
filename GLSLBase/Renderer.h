@@ -22,6 +22,10 @@ public:
 	   
 	void Test();
 	void Lecture2();
+	void Particle();
+	void GenQuadsVBO(int count);
+
+	int particle_count = 0;
 
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
@@ -41,5 +45,9 @@ private:
 
 	//Lecture2
 	GLuint m_VBOTri = 0;
+
+	// particle
+	GLuint randQuads = 0;
+	
 };
 

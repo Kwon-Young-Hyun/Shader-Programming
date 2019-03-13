@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <cstdlib>
 #include <cassert>
+#include <stdlib.h>
 
 Renderer::Renderer(int windowSizeX, int windowSizeY)
 {
@@ -49,6 +50,8 @@ void Renderer::CreateVertexBufferObjects()
 	glGenBuffers(1, &m_VBOTri);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOTri);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
+
+	std::cout << sizeof(triangle) << std::endl;
 }
 
 void Renderer::AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType)
@@ -300,6 +303,52 @@ void Renderer::Lecture2()
 	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
 
 	glDrawArrays(GL_TRIANGLES, 1, 3);
+
+	glDisableVertexAttribArray(attribPosition);
+}
+
+void Renderer::GenQuadsVBO(int count)
+{
+	float randX;
+	float randY;
+
+	float *vertices = new float[count * 3];
+	int index = 0;
+
+	for (int i = 0; i < count; ++i)
+	{
+		randX = ((float(rand()) / (float)RAND_MAX) * 2.f) - 1.0f;
+		randY = ((float(rand()) / (float)RAND_MAX) * 2.f) - 1.0f;
+
+		vertices[index] = randX;
+		index++;
+		vertices[index] = randY;
+		index++;
+		vertices[index] = 0.f;
+		index++;
+
+
+		std::cout << index << ":" << randX << ", " << randY << std::endl;
+	}
+
+	particle_count = count * 3;
+
+	glGenBuffers(1, &randQuads);
+	glBindBuffer(GL_ARRAY_BUFFER, randQuads);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * 4, vertices, GL_STATIC_DRAW);
+}
+
+void Renderer::Particle() {
+	glUseProgram(m_SolidRectShader);
+
+	int attribPosition = glGetAttribLocation(m_SolidRectShader, "a_Position");
+	glEnableVertexAttribArray(attribPosition);
+	glBindBuffer(GL_ARRAY_BUFFER, randQuads);
+	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+
+	//std::cout << particle_count << std::endl;
+
+	glDrawArrays(GL_TRIANGLES, 0, particle_count);
 
 	glDisableVertexAttribArray(attribPosition);
 }
