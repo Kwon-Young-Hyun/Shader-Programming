@@ -24,8 +24,7 @@ public:
 	void Lecture2();
 	void Particle();
 	void GenQuadsVBO(int count);
-	void CreateProxyGeometry();
-	void Play();
+	void Lecture3();
 
 	int particle_count = 0;
 
@@ -34,7 +33,8 @@ private:
 	bool ReadFile(char* filename, std::string *target);
 	void AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType);
 	GLuint CompileShaders(char* filenameVS, char* filenameFS);
-	void CreateVertexBufferObjects(); 
+	void CreateVertexBufferObjects();
+	void CreateProxyGeometry();
 	unsigned char * Renderer::loadBMPRaw(const char * imagepath, unsigned int& outWidth, unsigned int& outHeight);
 
 	bool m_Initialized = false;
@@ -51,8 +51,8 @@ private:
 	// particle
 	GLuint randQuads = 0;
 
-	int m_Count_ProxyGeo = 0;
-	GLuint m_VBO_ProxyGeo = 0;
+	int m_VBOGridMesh_Count = 0;
+	GLuint m_VBOGridMesh = 0;
 	
 };
 

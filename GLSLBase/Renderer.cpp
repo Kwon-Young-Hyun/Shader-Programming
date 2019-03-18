@@ -11,7 +11,6 @@ Renderer::Renderer(int windowSizeX, int windowSizeY)
 	Initialize(windowSizeX, windowSizeY);
 }
 
-
 Renderer::~Renderer()
 {
 }
@@ -166,6 +165,7 @@ GLuint Renderer::CompileShaders(char* filenameVS, char* filenameFS)
 
 	return ShaderProgram;
 }
+
 unsigned char * Renderer::loadBMPRaw(const char * imagepath, unsigned int& outWidth, unsigned int& outHeight)
 {
 	std::cout << "Loading bmp file " << imagepath << " ... " << std::endl;
@@ -410,7 +410,7 @@ void Renderer::CreateProxyGeometry()
 
 	float* point = new float[pointCountX*pointCountY * 2];		// point : 삼각형 각 점을 담은 배열
 	float* vertices = new float[(pointCountX - 1)*(pointCountY - 1) * 2 * 3 * 3];	// vertices : point를 가지고 삼각형 배열순서로 정렬한 정점들
-	m_Count_ProxyGeo = (pointCountX - 1)*(pointCountY - 1) * 2 * 3;
+	m_VBOGridMesh_Count = (pointCountX - 1)*(pointCountY - 1) * 2 * 3;
 
 	//Prepare points : 중심점 point 세팅
 	for (int x = 0; x < pointCountX; x++)
@@ -470,22 +470,22 @@ void Renderer::CreateProxyGeometry()
 		}
 	}
 
-	glGenBuffers(1, &m_VBO_ProxyGeo);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO_ProxyGeo);
+	glGenBuffers(1, &m_VBOGridMesh);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOGridMesh);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*(pointCountX - 1)*(pointCountY - 1) * 2 * 3 * 3, vertices, GL_STATIC_DRAW);
 }
 
-void Renderer::Play() {
+void Renderer::Lecture3() {
 	glUseProgram(m_SolidRectShader);
 
 	int attribPosition = glGetAttribLocation(m_SolidRectShader, "a_Position");
 	glEnableVertexAttribArray(attribPosition);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO_ProxyGeo);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBOGridMesh);
 	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
 
 	//std::cout << particle_count << std::endl;
 
-	glDrawArrays(GL_TRIANGLES, 0, m_Count_ProxyGeo);
+	glDrawArrays(GL_TRIANGLES, 0, m_VBOGridMesh_Count);
 
 	glDisableVertexAttribArray(attribPosition);
 }
