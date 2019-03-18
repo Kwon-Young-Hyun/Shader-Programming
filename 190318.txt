@@ -1,0 +1,18 @@
+190318  셰이더
+----------------------------------------------------------------------------------------------------------
+
+Vertex Shader : 하나의 Vertex 단위로 처리되는 stage
+Fragment Shader : 하나의 Fragment 단위로 처리되는 stage
+
+※ 화면의 크기의 중요성
+	Ex) 2000x2000 => 20fps || 1000x1000 => 60fps이상 : 픽셀의 수가 게임에 중요한 영향이 끼친다.
+	Why? 삼각형(Vertex 3개) 	=> Vertex Shader에서 3번 동작
+			         	=> 그 삼각형의 Fragment는? (1000x1000 일때)
+			         	=> 50만개의 Fragment 
+			  	=> Fragment Shader에서는 3개의 Vertex를 가지고 50만번 동작
+
+	따라서 2000x2000에서 삼각형을 Fragment Shader에서는 200만번 동작하지만,
+	         1000x1000에서 삼각형은 50만번 동작한다.(거의 4배차이) 큰차이!!!
+
+Tessellation Shader : Vertex를 추가할 수 있다.
+Geometry Shader : Tesellation에서 추가된 Vertex를 가지고 Primitive를 추가 구성할 수 있다.
