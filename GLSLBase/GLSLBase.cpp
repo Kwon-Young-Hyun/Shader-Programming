@@ -29,8 +29,10 @@ void RenderScene(void)
 	//g_Renderer->Test();
 	//g_Renderer->Lecture2();
 
-	g_Renderer->GenQuadsVBO(10);
-	g_Renderer->Particle();
+	//g_Renderer->GenQuadsVBO(10);
+	//g_Renderer->Particle();
+
+	g_Renderer->Play();
 
 	glutSwapBuffers();
 }

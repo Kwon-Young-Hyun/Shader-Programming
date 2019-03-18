@@ -24,6 +24,8 @@ public:
 	void Lecture2();
 	void Particle();
 	void GenQuadsVBO(int count);
+	void CreateProxyGeometry();
+	void Play();
 
 	int particle_count = 0;
 
@@ -48,6 +50,9 @@ private:
 
 	// particle
 	GLuint randQuads = 0;
+
+	int m_Count_ProxyGeo = 0;
+	GLuint m_VBO_ProxyGeo = 0;
 	
 };
 
