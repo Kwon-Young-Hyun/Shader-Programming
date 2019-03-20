@@ -43,6 +43,7 @@ private:
 	unsigned int m_WindowSizeY = 0;
 
 	GLuint m_VBORect = 0;
+	GLuint m_VBORectColor = 0;
 	GLuint m_SolidRectShader = 0;
 
 	//Lecture2

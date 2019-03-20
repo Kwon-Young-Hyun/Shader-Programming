@@ -25,22 +25,43 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	m_SolidRectShader = CompileShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
 	
 	//Create VBOs
-	//CreateVertexBufferObjects();
-	CreateProxyGeometry();
+	CreateVertexBufferObjects();
+	//CreateProxyGeometry();
 }
 
 void Renderer::CreateVertexBufferObjects()
 {
+	float size = 0.05f;
+
 	float rect[]
 		=
 	{
-		-0.5, -0.5, 0.f, -0.5, 0.5, 0.f, 0.5, 0.5, 0.f, //Triangle1
-		-0.5, -0.5, 0.f,  0.5, 0.5, 0.f, 0.5, -0.5, 0.f, //Triangle2
+		-size, -size, 0.f, 0.5,			// x, y, z, value
+		-size, size, 0.f, 0.5,
+		size, size, 0.f, 0.5,//Triangle1
+		-size, -size, 0.f, 0.5,
+		size, size, 0.f, 0.5,
+		size, -size, 0.f, 0.5//Triangle2
 	};
 
 	glGenBuffers(1, &m_VBORect);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBORect);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(rect), rect, GL_STATIC_DRAW);
+
+	float color[]
+		=
+	{
+		1, 0, 0, 1,			// r, g, b, a
+		1, 0, 0, 1,
+		1, 0, 0, 1,
+		1, 0, 0, 1,
+		1, 0, 0, 1,
+		1, 0, 0, 1
+	};
+
+	glGenBuffers(1, &m_VBORectColor);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBORectColor);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(color), color, GL_STATIC_DRAW);
 
 	// lecture2
 	float triangle[] = 
@@ -50,8 +71,6 @@ void Renderer::CreateVertexBufferObjects()
 	glGenBuffers(1, &m_VBOTri);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOTri);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
-
-	std::cout << sizeof(triangle) << std::endl;
 
 	//GenQuadsVBO(5);
 }
@@ -282,18 +301,36 @@ GLuint Renderer::CreateBmpTexture(char * filePath)
 	return temp;
 }
 
+float eTime = 0.f;
+
 void Renderer::Test()
 {
 	glUseProgram(m_SolidRectShader);
 
-	int attribPosition = glGetAttribLocation(m_SolidRectShader, "a_Position");
-	glEnableVertexAttribArray(attribPosition);
+	GLint aPos = glGetAttribLocation(m_SolidRectShader, "a_Position");
+	GLint aCol = glGetAttribLocation(m_SolidRectShader, "a_Color");
+
+	eTime += 1.0f;
+	if (eTime > 360.f)
+		eTime = 0.f;
+
+	float angle = eTime / 180.f * 3.14f;
+
+	GLuint uTime = glGetUniformLocation(m_SolidRectShader, "u_Time");
+	glUniform1f(uTime, angle);
+
+	glEnableVertexAttribArray(aPos);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBORect);
-	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+	glVertexAttribPointer(aPos, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, 0);
+
+	glEnableVertexAttribArray(aCol);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBORectColor);
+	glVertexAttribPointer(aCol, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, 0);
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
-	glDisableVertexAttribArray(attribPosition);
+	glDisableVertexAttribArray(aPos);
+	glDisableVertexAttribArray(aCol);
 }
 
 void Renderer::Lecture2()
