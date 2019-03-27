@@ -23,6 +23,7 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 
 	//Load shaders
 	m_SolidRectShader = CompileShaders("./Shaders/SolidRect.vs", "./Shaders/SolidRect.fs");
+	m_SimpleVelShader = CompileShaders("./Shaders/SimpleVel.vs", "./Shaders/SimpleVel.fs");
 	
 	//Create VBOs
 	CreateVertexBufferObjects();
@@ -72,7 +73,7 @@ void Renderer::CreateVertexBufferObjects()
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBOTri);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW);
 
-	//GenQuadsVBO(5);
+	GenQuadsVBO(100);
 }
 
 void Renderer::AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType)
@@ -352,7 +353,11 @@ void Renderer::GenQuadsVBO(int count)
 	float randX;
 	float randY;
 
-	float *vertices = new float[count * 6];
+	float randDirX;
+	float randDirY;
+	float randDirZ;
+
+	float *vertices = new float[count * 6 * 6];
 	float size = 0.01f;
 	int index = 0;
 
@@ -360,6 +365,11 @@ void Renderer::GenQuadsVBO(int count)
 	{
 		randX = ((float(rand()) / (float)RAND_MAX) * 2.f) - 1.0f;
 		randY = ((float(rand()) / (float)RAND_MAX) * 2.f) - 1.0f;
+
+		randDirX = ((float(rand()) / (float)RAND_MAX) * 2.f) - 1.0f;
+		randDirY = ((float(rand()) / (float)RAND_MAX) * 2.f) - 1.0f;
+		randDirZ = 0.f;
+			
 
 		// À§ »ï°¢Çü
 
@@ -369,12 +379,24 @@ void Renderer::GenQuadsVBO(int count)
 		index++;
 		vertices[index] = 0.f;
 		index++;
-
+		vertices[index] = randDirX;
+		index++;
+		vertices[index] = randDirY;
+		index++;
+		vertices[index] = randDirZ;
+		index++;
+	
 		vertices[index] = randX - size;
 		index++;
 		vertices[index] = randY + size;
 		index++;
 		vertices[index] = 0.f;
+		index++;
+		vertices[index] = randDirX;
+		index++;
+		vertices[index] = randDirY;
+		index++;
+		vertices[index] = randDirZ;
 		index++;
 
 		vertices[index] = randX + size;
@@ -382,6 +404,12 @@ void Renderer::GenQuadsVBO(int count)
 		vertices[index] = randY + size;
 		index++;
 		vertices[index] = 0.f;
+		index++;
+		vertices[index] = randDirX;
+		index++;
+		vertices[index] = randDirY;
+		index++;
+		vertices[index] = randDirZ;
 		index++;
 
 		// ¾Æ·¡ »ï°¢Çü
@@ -391,6 +419,12 @@ void Renderer::GenQuadsVBO(int count)
 		index++;
 		vertices[index] = 0.f;
 		index++;
+		vertices[index] = randDirX;
+		index++;
+		vertices[index] = randDirY;
+		index++;
+		vertices[index] = randDirZ;
+		index++;
 
 		vertices[index] = randX + size;
 		index++;
@@ -398,12 +432,24 @@ void Renderer::GenQuadsVBO(int count)
 		index++;
 		vertices[index] = 0.f;
 		index++;
+		vertices[index] = randDirX;
+		index++;
+		vertices[index] = randDirY;
+		index++;
+		vertices[index] = randDirZ;
+		index++;
 
 		vertices[index] = randX + size;
 		index++;
 		vertices[index] = randY - size;
 		index++;
 		vertices[index] = 0.f;
+		index++;
+		vertices[index] = randDirX;
+		index++;
+		vertices[index] = randDirY;
+		index++;
+		vertices[index] = randDirZ;
 		index++;
 
 
@@ -414,7 +460,7 @@ void Renderer::GenQuadsVBO(int count)
 
 	glGenBuffers(1, &randQuads);
 	glBindBuffer(GL_ARRAY_BUFFER, randQuads);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * 6 * count, vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 6 * count, vertices, GL_STATIC_DRAW);
 }
 
 void Renderer::Particle() {
@@ -423,11 +469,11 @@ void Renderer::Particle() {
 	int attribPosition = glGetAttribLocation(m_SolidRectShader, "a_Position");
 	glEnableVertexAttribArray(attribPosition);
 	glBindBuffer(GL_ARRAY_BUFFER, randQuads);
-	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+	glVertexAttribPointer(attribPosition, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, 0);
 
 	//std::cout << particle_count << std::endl;
 
-	glDrawArrays(GL_TRIANGLES, 0, particle_count * 3);
+	glDrawArrays(GL_TRIANGLES, 0, particle_count * 4);
 
 	glDisableVertexAttribArray(attribPosition);
 }
@@ -525,4 +571,29 @@ void Renderer::Lecture3() {
 	glDrawArrays(GL_TRIANGLES, 0, m_VBOGridMesh_Count);
 
 	glDisableVertexAttribArray(attribPosition);
+}
+
+void Renderer::Lecture4() {
+	glUseProgram(m_SimpleVelShader);
+
+	int attribPosition = glGetAttribLocation(m_SimpleVelShader, "a_Position");
+	int attribVelocity = glGetAttribLocation(m_SimpleVelShader, "a_Vel");
+
+	eTime += 0.0001f;
+
+	GLuint uTime = glGetUniformLocation(m_SimpleVelShader, "u_Time");
+	glUniform1f(uTime, eTime);
+
+	glEnableVertexAttribArray(attribPosition);
+	glEnableVertexAttribArray(attribVelocity);
+	glBindBuffer(GL_ARRAY_BUFFER, randQuads);
+	glVertexAttribPointer(attribPosition, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
+	glVertexAttribPointer(attribVelocity, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (GLvoid*)(sizeof(float)*3));
+
+	//std::cout << particle_count << std::endl;
+
+	glDrawArrays(GL_TRIANGLES, 0, particle_count * 3);
+
+	glDisableVertexAttribArray(attribPosition);
+	glDisableVertexAttribArray(attribVelocity);
 }
